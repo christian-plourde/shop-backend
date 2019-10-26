@@ -11,10 +11,14 @@ script:
   - mkdir -p shop-backend
   - mv !(shop-backend) shop-backend
   - git clone https://$GITHUB_TOKEN@github.com/SparrowOchon/shop-frontend.git
-  - mv shop-frontend/* .
+  - cd shop-frontend
+  - npm run-script build
+  - mv build/* $TRAVIS_BUILD_DIR/
+  - cd ..
+  - sudo rm -R shop-frontend
   - cd shop-backend
   - git clone https://$GITHUB_TOKEN@github.com/SparrowOchon/shop-tests.git
-  - cp -R shop-tests/backend $TRAVIS_BUILD_DIR/tests/
+  - cp -R shop-tests/backend ./tests/
   - sudo rm -R shop-tests
   - cd ..
 deploy:
@@ -24,4 +28,3 @@ deploy:
   app: shop-354
   on: dev-heroku
   skip_cleanup: true
-  run: rm -R shop-backend/tests
