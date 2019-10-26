@@ -1,12 +1,12 @@
 language: php
 php:
   - 7.3
-
 before_install:
   - composer clear-cache
 install:
   - composer self-update
   - composer install --no-interaction
+  - npm install
 script:
   - mkdir -p shop-backend
   - mv !(shop-backend) shop-backend
@@ -26,5 +26,5 @@ deploy:
   api_key:
     secure: $HEROKU_KEY
   app: shop-354
-  on: dev-heroku
+  on: dev-demo
   skip_cleanup: true
