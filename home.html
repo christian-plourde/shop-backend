@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="functions.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+	<h1>COMP 354 Test Page</h1>
+	Type MySQL Query Here: <input type="text" id="query"><br>
+	<button id="Submit" onclick="querySubmit()" value="Submit">Submit</button>
+	<label id="error"></label>
+	<br>
+	Type Product ID Here: <input type="text" id="prodID"><br>
+	<button id="Submit" onclick="prodQuerySubmit()" value="Submit">Submit</button>
+	<label id="prodError"></label>
+	<br>
+	<input type="text" id="searchTerm" placeholder="Search Term Here"><br>
+	<button id="Submit" onclick="searchQuerySubmit()" value="Submit">Submit</button>
+	<label id="searchError"></label>
+	<br><br><br>
+	<label id="table"></label>
+</body>
+</html>

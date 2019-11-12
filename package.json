@@ -1,7 +1,10 @@
 {
   "lint-staged": {
     "linters": {
-      "*.php": ["php ./vendor/bin/php-cs-fixer fix --config .php_cs", "git add"]
+      "*.php": [
+        "php ./vendor/bin/php-cs-fixer fix --config .php_cs",
+        "git add"
+      ]
     }
   },
   "husky": {
