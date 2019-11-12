@@ -18,7 +18,7 @@ function prodQuerySubmit() {
 	document.getElementById("prodError").innerHTML = "";
 	if(ID) {
 		//If ID is not null, undefined, empty, etc. post request to handler php page
-		$.post("prodDoQuery.php", {prodID: ID}, queryPost);
+		$.post("findProdByID.php", {prodID: ID}, queryPost);
 	} else {
 		document.getElementById("prodError").innerHTML = "client side empty";
 	}
@@ -31,7 +31,7 @@ function searchQuerySubmit() {
 	document.getElementById("searchError").innerHTML = "";
 	if(searchTerm) {
 		//If searchTerm is not null, undefined, empty, etc. post request to handler php page
-		$.post("searchDoQuery.php", {searchTerm: searchTerm}, queryPost);
+		$.post("findProdsBySearch.php", {searchTerm: searchTerm}, queryPost);
 	} else {
 		document.getElementById("searchError").innerHTML = "client side empty";
 	}
