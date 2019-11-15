@@ -21,7 +21,7 @@ if(!empty($_POST["username"]) && !empty($_POST[password])){
     $result = get_account($user, $pass);
 
     if($result == "null"){
-        header("Location: https://shop-354.herokuapp.com/login");
+	 header("Location: {$_SERVER['HTTP_REFERER']}");      
     } else {
         header("Location: https://shop-354.herokuapp.com/");
     }
