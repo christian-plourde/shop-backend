@@ -20,7 +20,7 @@ if(!empty($_POST["username"]) && !empty($_POST[password])){
     $pass = $_POST["password"];
     $result = get_account($user, $pass);
 
-    if($result == NULL){
+    if($result == "null"){
         header("Location: https://shop-354.herokuapp.com/login");
     } else {
         header("Location: https://shop-354.herokuapp.com/");
