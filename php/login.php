@@ -21,7 +21,8 @@ if(!empty($_POST["username"]) && !empty($_POST[password])){
     $result = get_account($user, $pass);
 
     if($result == "null"){
-	 header("Location: {$_SERVER['HTTP_REFERER']}");      
+
+	 header("location:javascript://history.go(-1)");      
     } else {
         header("Location: https://shop-354.herokuapp.com/");
     }
