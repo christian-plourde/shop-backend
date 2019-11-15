@@ -10,7 +10,6 @@ script:
   - git clone https://$GITHUB_TOKEN@github.com/SparrowOchon/shop-tests.git
   - cp -R shop-tests/backend $TRAVIS_BUILD_DIR/tests/
   - sudo rm -R shop-tests
-  - cd ..
 deploy:
   provider: heroku
   api_key:
