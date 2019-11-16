@@ -15,16 +15,25 @@ function get_account($user, $pass){
     return json_encode ($result->fetch_assoc());
     }
 
-if(!empty($_POST["username"]) && !empty($_POST[password])){
-    $user = $_POST["username"];
-    $pass = $_POST["password"];
-    $result = get_account($user, $pass);
+$data = json_decode(file_get_contents("php://input"), TRUE);
+$username = $data['username'];
+$password = $data['password'];
+
+
+if(!empty($username) && !empty($password)){
+    $result = get_account($username, $password);
+
+    $echo_array = array("Accepted" => false);
 
     if($result == "null"){
 
-	 header("location:javascript://history.go(-1)");      
+        $echo_array["Accepted"] = false;
+        echo json_encode($echo_array);
+         
     } else {
-        header("Location: https://shop-354.herokuapp.com/");
+        
+        $echo_array["Accepted"] = true;
+        echo json_encode($echo_array);
     }
 }
 ?>
