@@ -1,9 +1,12 @@
-<?
+<?php
+
 include 'Connect.php';
+
+$data = json_decode(file_get_contents("php://input"), TRUE);
 
 $TABLE_NAME = 'Accounts';#in case we change our minds
 #Input fields are the name attributes of the input tags found at the very summit of the table
-$INPUT_FIELDS = ["accountID", "username", "email", "password", "first_name", "last_name", "address", "Country", "isAdmin"];
+$INPUT_FIELDS = ["accountID", "username", "email", "password", "firstName", "lastName", "address", "Country", "isAdmin"];
 $SQL_FIELDS = ["accountID", "username", "email", "password", "firstName", "lastName", "address", "country", "isAdmin"];
 $INPUT_FIELD_TYPES=["int", "string", "string", "string", "string", "string", "string", "string", "string", "int"];
 $QUERY = 'INSERT INTO ';
@@ -20,34 +23,39 @@ foreach($SQL_FIELDS as $field){
   }
    $counter++;
 }
-
 $QUERY_VALUES = substr($QUERY_VALUES, 0, -2);
 $QUERY_VALUES .= ")";
 $QUERY .= " ";
 $QUERY .= $QUERY_VALUES;
 $QUERY .= " VALUES ";
 $ENTRY = "(";
-for ($i = 1; $i < $counter - 2; $i++)
+for ($i = 1; $i < $counter - 1; $i++)
 {
   if ($SQL_FIELDS[$i] != "int"){
       $ENTRY .= "'";
-      $ENTRY .= $_POST[$INPUT_FIELDS[$i]];
+      $ENTRY .= $data[$INPUT_FIELDS[$i]];
       $ENTRY .= "'";
   }
   else{
-      $ENTRY .= $_POST[$INPUT_FIELDS[$i]];
+      $ENTRY .= $data[$INPUT_FIELDS[$i]];
   }
   $ENTRY .= ", ";
 }
-$ENTRY .= "'Canada'";//Assume from Canada
-$ENTRY .= ", ";
 $ENTRY .= "0";//Not an admin
 $ENTRY .= ");";
 $QUERY .= $ENTRY;
-// echo $QUERY;
 $db = get_db_connection();
-$result = $db->query($QUERY);
+$echo_array = array("Accepted" => false);
 
-// header("Location: http://localhost:3000/");
-header("Location: https://shop-354.herokuapp.com/");
+$db->query($QUERY);
+
+$err = $db->error;
+
+if($err == NULL)
+{
+	$echo_array["Accepted"] = true;
+}
+
+echo json_encode($echo_array);
+
 ?>
