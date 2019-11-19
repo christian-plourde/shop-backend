@@ -1,27 +1,19 @@
 language: php
 php:
   - 7.3
-
 before_install:
   - composer clear-cache
 install:
   - composer self-update
   - composer install --no-interaction
 script:
-  - mkdir -p shop-backend
-  - mv !(shop-backend) shop-backend
-  - git clone https://$GITHUB_TOKEN@github.com/SparrowOchon/shop-frontend.git
-  - mv shop-frontend/* .
-  - cd shop-backend
   - git clone https://$GITHUB_TOKEN@github.com/SparrowOchon/shop-tests.git
   - cp -R shop-tests/backend $TRAVIS_BUILD_DIR/tests/
   - sudo rm -R shop-tests
-  - cd ..
 deploy:
   provider: heroku
   api_key:
-    secure: $HEROKU_KEY
-  app: shop-354
+    secure: VatAlh9NlT7haUUILkNXt0Ykd7UCvUihJo0dkqOr51BH5CqNxViQ+fWys4Wq8ltqNl/kVVTUYnOQp2wGEV7NASJ2Xrydp1gevstnkWylg+FVm1y8sf+2eOCPrKMzPxMZkeonNlMwFmims9KOsudUL0NmtBkL/ZcZb/iOI2CFv15dvDbuH1V2XA8c8f2Ahp9WWVAb4LNRlVke10cfi6T/mDMCLEy/GAgj8OMMLl+EzWjUMLo3N2/cgF84z5LFr/H2XE1MUqQS09Yn3r5AEVsxhw73I9E72Ek5PVmH2IsW3OWqRHvM3MW4BZ+FCtjEXV05IUyjypcEpOquyIzzD+0mYUkYG9tTK139hl536BJtNCEYVbaoM++Vm5khMDdJdqcoi9BoVoGPlFmfMM5D3dK4S8zJVktsO99xEQGZQ3mTUAprP1Pl/bYc0S80aeza84V5wmQVI50or3erkrzT+AHV6MV/NPE7Z6HvenMnxkPYeMv0Mw4r8VuX1j6C6xNNsmDc3jgH3jZFYiYRNPP/iypzEzzGoZL1jVg8ZKlEPb5/m+ZKQA8kpDJcXGkaBJdH0D5vxTmNoLII0+R/FebBCXHAVjYe97HvbAM1epgYGxCSc9I+0//mCTxvvFLBAUxJEsTZsORyidt+cTtaluccs3B7IEo676YKVYz2rLsja/iLwTE=
+  app: shop-354-backend
   on: master
   skip_cleanup: true
-  run: rm -R shop-backend/tests
