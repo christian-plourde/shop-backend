@@ -19,7 +19,7 @@ return json_encode ($result->fetch_assoc());
 
 function get_review($id){
 $db = get_db_connection();
-$result = $db->query("SELECT Reviews.* FROM Reviews where Reviews.productID=$id"); 
+$result = $db->query("SELECT Reviews.* FROM Reviews,ReviewImages where Reviews.productID=$id"); 
 return json_encode($result->fetch_all(MYSQLI_ASSOC),JSON_PRETTY_PRINT,2);
 }
 
@@ -31,8 +31,23 @@ return json_encode($result->fetch_all(MYSQLI_ASSOC),JSON_PRETTY_PRINT,2);
 
 function get_products(){
 $db = get_db_connection();
-$result = $db->query("SELECT * FROM Products");
-return json_encode($result->fetch_all(MYSQLI_ASSOC),JSON_PRETTY_PRINT);	
+$result = $db->query("SELECT Products.* FROM Products");
+$array = $result->fetch_all(MYSQLI_ASSOC);
+foreach($array as &$data){
+$data["tags"] = json_decode(get_tag($data['productID']));
+}
+return json_encode($array);	
+}
+
+
+function get_tag($id){
+$db = get_db_connection();
+$result = ($db->query("SELECT tag FROM Tags where Tags.productID = $id"))->fetch_all(MYSQLI_ASSOC);
+$array = array();
+foreach($result as $key=>$value){
+array_push($array,$value['tag']);
+}
+return json_encode($array);
 }
 
 if(isset($_GET['averagereview'])){
@@ -49,6 +64,7 @@ echo get_image($_GET['image']);
 
 if(isset($_GET['product'])){
 echo get_products();
+	 
 }
 ?>
 
