@@ -24,7 +24,7 @@ return json_encode($array);
 elseif($id>0){
 $result = $db->query("SELECT Products.* FROM Products WHERE productID=$id");
 $array = $result->fetch_assoc();
-$data["tags"] = json_decode(get_tag($data['productID']));
+$array["tags"] = json_decode(get_tag($id));
 return json_encode($array);		
 }
 
