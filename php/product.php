@@ -1,4 +1,14 @@
 <?php
+function get_db_connection() {
+$servername = "www.remotemysql.com";
+$username = "HQgsxOVVFA";
+$password = "QU8LU8QaqR";
+$database = "HQgsxOVVFA";
+$dbport = "3306";
+$dbh = new mysqli($servername, $username, $password, $database, $dbport);
+return $dbh;
+}
+
 //Gets Products; If input is -1, will return all products. If input is a number greater than zero, it will return a products with
 //the same product id as the input
 function get_products($id){
