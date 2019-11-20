@@ -19,35 +19,32 @@ return json_encode ($result->fetch_assoc());
 
 function get_review($id){
 $db = get_db_connection();
-$result = $db->query("SELECT Reviews.* FROM Reviews,ReviewImages where Reviews.productID=$id"); 
-return json_encode($result->fetch_all(MYSQLI_ASSOC),JSON_PRETTY_PRINT,2);
-}
-
-function get_image($id){
-$db = get_db_connection();
-$result = $db->query("SELECT ReviewImages.image_url FROM Reviews,ReviewImages where ReviewImages.reviewID = Reviews.reviewID AND Reviews.productID=$id");
-return json_encode($result->fetch_all(MYSQLI_ASSOC),JSON_PRETTY_PRINT,2);
-}
-
-function get_products(){
-$db = get_db_connection();
-$result = $db->query("SELECT Products.* FROM Products");
+$result = $db->query("SELECT Reviews.* FROM Reviews where Reviews.productID=$id");
 $array = $result->fetch_all(MYSQLI_ASSOC);
 foreach($array as &$data){
-$data["tags"] = json_decode(get_tag($data['productID']));
-}
-return json_encode($array);	
-}
-
-
-function get_tag($id){
-$db = get_db_connection();
-$result = ($db->query("SELECT tag FROM Tags where Tags.productID = $id"))->fetch_all(MYSQLI_ASSOC);
-$array = array();
-foreach($result as $key=>$value){
-array_push($array,$value['tag']);
+$data["images"] = json_decode(get_image($data['reviewID']),true);
 }
 return json_encode($array);
+}
+
+function get_image($rid){
+$db = get_db_connection();
+$result = $db->query("SELECT ReviewImages.image_url FROM Reviews,ReviewImages where ReviewImages.reviewID = Reviews.reviewID AND Reviews.reviewID=$rid");
+$array = array();
+foreach($result as $key=>$value){
+array_push($array,$value['image_url']);
+}
+return json_encode($array);
+}
+
+function add_review($pid,$rid,$rating,$reviewerText){
+$db = get_db_connection();
+$result = $db->query("INSERT INTO Reviews(productID,reviewerID,rating,reviewerText) VALUES ($pid,$rid,$rating,$reviewerText)");	
+}
+
+function remove_review($rid){
+$db = get_db_connection();
+$result = $db->query("DELETE FROM Reviews WHERE reviewID=$rid");	
 }
 
 if(isset($_GET['averagereview'])){
@@ -62,9 +59,5 @@ if(isset($_GET['image'])){
 echo get_image($_GET['image']);
 }
 
-if(isset($_GET['product'])){
-echo get_products();
-	 
-}
 ?>
 
