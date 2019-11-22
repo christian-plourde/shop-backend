@@ -1,14 +1,6 @@
 <?php
+include("Connect.php");
 date_default_timezone_set("America/New_York");
-function get_db_connection() {
-$servername = "www.remotemysql.com";
-$username = "HQgsxOVVFA";
-$password = "QU8LU8QaqR";
-$database = "HQgsxOVVFA";
-$dbport = "3306";
-$dbh = new mysqli($servername, $username, $password, $database, $dbport);
-return $dbh;
-}
 
 function insert_transcation($productid,$buyerid,$sellerid,$quantity,$price){
 $db = get_db_connection();
@@ -25,7 +17,8 @@ echo("Cannot sell more than available!");
 }
 }
 
-if(isset($_GET['a'])){
-	insert_transcation($_GET['a'],$_GET['b'],$_GET['c'],$_GET['d'],$_GET['e']);
+if(isset($_POST['productid']) && isset($_POST['buyerid']) && isset($_POST['sellerid']) && isset($_POST['quantity']) && 
+	isset($_POST['price'])){
+	insert_transcation($_POST['productid'],$_POST['buyerid'],$_POST['sellerid'],$_POST['quantity'],$_POST['price']);
 }
 ?>
