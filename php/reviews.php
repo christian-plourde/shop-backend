@@ -1,13 +1,5 @@
 <?php
-function get_db_connection() {
-$servername = "www.remotemysql.com";
-$username = "HQgsxOVVFA";
-$password = "QU8LU8QaqR";
-$database = "HQgsxOVVFA";
-$dbport = "3306";
-$dbh = new mysqli($servername, $username, $password, $database, $dbport);
-return $dbh;
-}
+require_once("Connect.php");
 
 
 
@@ -39,7 +31,7 @@ return json_encode($array);
 
 function add_review($pid,$rid,$rating,$reviewerText){
 $db = get_db_connection();
-$result = $db->query("INSERT INTO Reviews(productID,reviewerID,rating,reviewerText) VALUES ($pid,$rid,$rating,$reviewerText)");	
+$result = $db->query("INSERT INTO Reviews(productID,reviewerID,rating,reviewerText) VALUES ($pid,$rid,'$rating','$reviewerText')");	
 }
 
 function remove_review($rid){
@@ -59,5 +51,12 @@ if(isset($_GET['image'])){
 echo get_image($_GET['image']);
 }
 
+if(isset($_POST['delete'])){
+remove_review($_POST['delete']);
+}
+
+if(isset($_POST['pid']) && isset($_POST['rid']) && isset($_POST['rating']) && isset($_POST['reviewerText'])){
+add_review($_POST['pid'],$_POST['rid'],$_POST['rating'],$_POST['reviewerText']);
+}
 ?>
 
