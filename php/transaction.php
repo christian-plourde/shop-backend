@@ -2,6 +2,12 @@
 require_once("Connect.php");
 date_default_timezone_set("America/New_York");
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require '../vendor/autoload.php';
+
 function insert_transcation($productid,$buyerid,$sellerid,$quantity,$price){
 $db = get_db_connection();
 $date = date("Y-m-d H:i:s");
@@ -38,11 +44,12 @@ function send_buyer_email($productid, $buyerid, $sellerid, $date, $price) {
 				Date: $date
 				
 				Thank you for your purchase. Your item will be shipped soon!";
+
 	$secureCheck = sanitize_email($buyerEmail);
 	if($secureCheck == false) {
 		echo("Invalid Email");
 	} else {
-		mail($buyerEmail, $subject, $message);
+		send_mail($buyerEmail, $subject, $message);
 		echo("email sent");
 	}
 
@@ -58,11 +65,12 @@ function send_seller_email($productid, $sellerid, $date) {
 	$message = "Hello, $sellerName,
 				Good News! Your product, $prodName, has been bought!
 				Please go to your account to confirm shipment!";
+
 	$secureCheck = sanitize_email($sellerEmail);
 	if($secureCheck == false) {
 		echo ("Invalid Email");
 	} else {
-		mail($sellerEmail, $subject, $message);
+		send_mail($sellerEmail, $subject, $message);
 		echo ("email sent");
 	}
 }
@@ -77,6 +85,47 @@ function sanitize_email($email) {
 	}
 }
 
+
+function send_mail($email, $subject, $message) {
+	$mail = new PHPMailer(true);
+    try {
+        $mail->SMTPOptions = array(
+            'ssl'=>array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        //Server Settings
+        $mail->SMTPDebug = 2;
+        $mail->isSMTP();
+        //MAIL LOGIN
+        //shop.03544@gmail.com
+        //COMP3544
+        $mail->Host = "smtp.gmail.com";
+        $mail->SMTPAuth = true;
+        $mail->Username = "shop.03544@gmail.com";
+        $mail->Password = "COMP3544";
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465;
+
+        //Receipent
+        $mail->setFrom('noreply@shop354.com', 'SHOP 354');
+        $mail->addAddress($email);
+
+        //Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+
+        $mail->send();
+        $result["msg"] = "GOOD";
+        echo json_encode($result);
+    } catch (Exception $e) {
+        $result["msg"] = "error $mail->ErrorInfo";
+        echo json_encode($result);
+    }
+}
 
 
 if(isset($_POST['productid']) && isset($_POST['buyerid']) && isset($_POST['sellerid']) && isset($_POST['quantity']) && isset($_POST['price'])){
