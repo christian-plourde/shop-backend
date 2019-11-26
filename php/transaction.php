@@ -9,6 +9,11 @@ use PHPMailer\PHPMailer\Exception;
 require '../vendor/autoload.php';
 
 function insert_transcation($productid,$buyerid,$sellerid,$quantity,$price){
+var_dump($productid);
+var_dump($buyerid);
+var_dump($sellerid);
+var_dump($quantity);
+var_dump($price);
 $db = get_db_connection();
 $date = date("Y-m-d H:i:s");
 $currentquantity = $db->query("SELECT quantity FROM Products WHERE productid = $productid")->fetch_assoc()['quantity'];
@@ -118,8 +123,11 @@ function send_mail($email, $subject, $message) {
         $mail->Subject = $subject;
         $mail->Body = $message;
 
+		var_dump($mail);
+
         $mail->send();
-        $result["msg"] = "GOOD";
+		$result["msg"] = "GOOD";
+		echo "good";
         echo json_encode($result);
     } catch (Exception $e) {
         $result["msg"] = "error $mail->ErrorInfo";
