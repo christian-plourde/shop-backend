@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require '../vendor/autoload.php';
+require 'vendor/autoload.php';
 
 function insert_transcation($productid,$buyerid,$sellerid,$quantity,$price){
 $db = get_db_connection();
@@ -17,7 +17,7 @@ $result = $db->query("INSERT INTO Transaction(productID,buyerID,sellerID,time_st
 	$sellerid,'$date',$quantity,$price)"); 
 $db->query("UPDATE Products SET quantity = quantity - $quantity WHERE productID = $productid");
 send_buyer_email($productid, $buyerid, $sellerid, $date, $price);
-send_seller_email($product, $sellerid, $date);
+send_seller_email($productid, $sellerid, $date);
 }
 else
 {
@@ -34,16 +34,16 @@ function send_buyer_email($productid, $buyerid, $sellerid, $date, $price) {
 	$priceAfterTax = $price * 1.15;
 
 	$subject = "Thank you for your purchase from $sellerName";
-	$message = "Hello, $buyerUser,
-				Thank you for your purchase from shop354, below is your purchase summary.
-
-				Item Bought: $prodName
-				Seller: $sellerName
-				Subtotal: $price
-				Total: $priceAfterTax
-				Date: $date
-				
-				Thank you for your purchase. Your item will be shipped soon!";
+	$message = "Hello, $buyerUser,<br>
+				Thank you for your purchase from shop354, below is your purchase summary.<br>
+				<br>
+				Item Bought: $prodName<br>
+				Seller: $sellerName<br>
+				Subtotal: $price<br>
+				Total: $priceAfterTax<br>
+				Date: $date<br>
+				<br>
+				Thank you for your purchase. Your item will be shipped soon!<br>";
 
 	$secureCheck = sanitize_email($buyerEmail);
 	if($secureCheck == false) {
@@ -62,9 +62,9 @@ function send_seller_email($productid, $sellerid, $date) {
 	$prodName = $prodName = $db->query("SELECT productName FROM Products WHERE productID = $productid")->fetch_assoc()['productName'];
 
 	$subject = "Your product has been bought!";
-	$message = "Hello, $sellerName,
-				Good News! Your product, $prodName, has been bought!
-				Please go to your account to confirm shipment!";
+	$message = "Hello, $sellerName,<br>
+				Good News! Your product, $prodName, has been bought!<br>
+				Please go to your account to confirm shipment!<br>";
 
 	$secureCheck = sanitize_email($sellerEmail);
 	if($secureCheck == false) {
