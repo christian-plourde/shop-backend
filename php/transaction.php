@@ -127,7 +127,8 @@ function send_mail($email, $subject, $message) {
                 'allow_self_signed' => true
             )
         );
-        //Server Settings
+		//Server Settings
+		var_dump("server settings");
         $mail->SMTPDebug = 2;
         $mail->isSMTP();
         //MAIL LOGIN
@@ -137,14 +138,16 @@ function send_mail($email, $subject, $message) {
         $mail->SMTPAuth = true;
         $mail->Username = "shop.03544@gmail.com";
         $mail->Password = "COMP3544";
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port = 465;
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
 
-        //Receipent
+		//Receipent
+		var_dump("receipent");
         $mail->setFrom('noreply@shop354.com', 'SHOP 354');
         $mail->addAddress($email);
 
-        //Content
+		//Content
+		var_dump("content");
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body = $message;
