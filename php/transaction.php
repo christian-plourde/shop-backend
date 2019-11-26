@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 function insert_transcation($productid,$buyerid,$sellerid,$quantity,$price){
 $db = get_db_connection();
@@ -34,16 +34,16 @@ function send_buyer_email($productid, $buyerid, $sellerid, $date, $price) {
 	$priceAfterTax = $price * 1.15;
 
 	$subject = "Thank you for your purchase from $sellerName";
-	$message = "Hello, $buyerUser,<br>
+	$message = "Hello $buyerUser,<br>
 				Thank you for your purchase from shop354, below is your purchase summary.<br>
 				<br>
 				Item Bought: $prodName<br>
 				Seller: $sellerName<br>
-				Subtotal: $price<br>
-				Total: $priceAfterTax<br>
+				Subtotal: \$".round($price, 2)."<br>
+				Total: \$".round($priceAfterTax, 2)."<br>
 				Date: $date<br>
 				<br>
-				Thank you for your purchase. Your item will be shipped soon!<br>";
+				Thank you for your purchase. Your item will be shipped soon!";
 
 	$secureCheck = sanitize_email($buyerEmail);
 	if($secureCheck == false) {
