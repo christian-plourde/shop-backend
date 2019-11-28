@@ -1,8 +1,7 @@
 {
     "require": {
         "friendsofphp/php-cs-fixer": "^2.15",
-        "phpunit/phpunit": "^8.4",
-        "phpmailer/phpmailer": "~6.1"
+        "phpunit/phpunit": "^8.4"
     }
 }
 
