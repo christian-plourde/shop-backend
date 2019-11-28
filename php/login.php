@@ -1,14 +1,5 @@
 <?php
-//A function to return a connection to th database
-function get_db_connection() {
-  $servername = "www.remotemysql.com";
-  $username = "HQgsxOVVFA";
-  $password = "QU8LU8QaqR";
-  $database = "HQgsxOVVFA";
-  $dbport = "3306";
-  $dbh = new mysqli($servername, $username, $password, $database, $dbport);
-  return $dbh;
-}
+require_once("Connect.php");
 //A function to return a list of all successful queries in the Accounts table for the given username and password.
 function get_account($user, $pass){
     $db = get_db_connection();
