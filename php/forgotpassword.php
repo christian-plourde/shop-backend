@@ -4,10 +4,12 @@ require_once 'User.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-// require 'vendor/autoload.php';
+
+//require 'vendor/autoload.php';
 
 // USE BELOW REQUIRE WHEN UPLOADING TO GIT
-require '../vendor/autoload.php'
+require '../vendor/autoload.php';
+
 
 function send_mail($email, $subject, $message) {
 	var_dump("in send_mail");
@@ -62,19 +64,32 @@ function send_mail($email, $subject, $message) {
 }
 
 
-$data = array("username"=>"burnsj056");//Spam Jacques
-// $data = json_decode(file_get_contents("php://input"), TRUE);
+function generate_password() {
+    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < 8; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
+}
+
+//$data = array("email"=>"burnsj056@gmail.com");//Spam Jacques
+ $data = json_decode(file_get_contents("php://input"), TRUE);
 
 if (!isset($data))
 {
   echo json_encode(array("Accepted" => false, "reason" => "data not set"));
   return;
 }
-$username = $data['username'];
+
+$email = $data['email'];
 
 $db = get_db_connection();
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-$result = $db->query("SELECT email FROM Accounts WHERE username = '$username'")->fetch_assoc()['email'];
+$result = $db->query("SELECT email FROM Accounts WHERE email = '$email'")->fetch_assoc()['email'];
+
 
 $echo_array = array("Accepted" => false, "reason" => "No results found for email");
 if(isset($result))
@@ -83,11 +98,29 @@ if(isset($result))
   // the message
   $msg = "First line of text\nSecond line of text";
 
+  // generate new password
+  $newPass = generate_password();
+
+  // encrypt pass
+  $arr = str_split($newPass);
+  var_dump($arr);
+  $encryptPass = "";
+  foreach ($arr as $char) {
+    $encryptPass .= chr(ord($char) + 1);
+  }
+
+  // update password for user
+  $db->query("UPDATE Accounts SET password = '$encryptPass' WHERE email = '$email'");
+
+  $msg = "Hello, <br>
+         You requested to change your password, below is your new password. <br>
+         Password: $newPass";
+  
   // use wordwrap() if lines are longer than 70 characters
   $msg = wordwrap($msg,70);
 
   // send email
-  send_mail($result,"My subject",$msg);
+  send_mail($result,"Forgot Password",$msg);
 }
 echo json_encode($echo_array);
 ?>
