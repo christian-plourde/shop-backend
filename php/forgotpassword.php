@@ -4,10 +4,12 @@ require_once 'User.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+
 //require 'vendor/autoload.php';
 
 // USE BELOW REQUIRE WHEN UPLOADING TO GIT
 require '../vendor/autoload.php';
+
 
 function send_mail($email, $subject, $message) {
 	var_dump("in send_mail");
@@ -61,6 +63,7 @@ function send_mail($email, $subject, $message) {
 	var_dump("out send_mail");
 }
 
+
 function generate_password() {
     $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
     $pass = array(); //remember to declare $pass as an array
@@ -80,11 +83,13 @@ if (!isset($data))
   echo json_encode(array("Accepted" => false, "reason" => "data not set"));
   return;
 }
+
 $email = $data['email'];
 
 $db = get_db_connection();
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $result = $db->query("SELECT email FROM Accounts WHERE email = '$email'")->fetch_assoc()['email'];
+
 
 $echo_array = array("Accepted" => false, "reason" => "No results found for email");
 if(isset($result))
