@@ -20,6 +20,7 @@ $result = get_products_sold_by_user($username);
 $echo_array = array("Accepted" => false, "products" => NULL);
 if(isset($result))
 {
+
     $products = array();
   // output data of each row
     while($row = $result->fetch_assoc()) {
