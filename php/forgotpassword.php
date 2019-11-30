@@ -13,7 +13,7 @@ require '../vendor/autoload.php';
 
 
 function send_mail($email, $subject, $message) {
-	//var_dump("in send_mail");
+	var_dump("in send_mail");
 	$mail = new PHPMailer(true);
     try {
         $mail->SMTPOptions = array(
@@ -24,7 +24,7 @@ function send_mail($email, $subject, $message) {
             )
         );
 		//Server Settings
-		//var_dump("server settings");
+		var_dump("server settings");
         $mail->SMTPDebug = 2;
         $mail->isSMTP();
         //MAIL LOGIN
@@ -38,31 +38,30 @@ function send_mail($email, $subject, $message) {
         $mail->Port = 587;
 
 		//Receipent
-		//var_dump("receipent");
+		var_dump("receipent");
         $mail->setFrom('noreply@shop354.com', 'SHOP 354');
         $mail->addAddress($email);
 
 		//Content
-		//var_dump("content");
+		var_dump("content");
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body = $message;
 
-		//var_dump($mail);
+		var_dump($mail);
 
         $mail->send();
-		// $result["msg"] = "GOOD";
-		// echo "good";
-		//var_dump("mail sent");
-        echo json_encode(["Accepted"=>true, "reason"=>""]);
+		$result["msg"] = "GOOD";
+		echo "good";
+		var_dump("mail sent");
+        // echo json_encode(["Accepted"=>true, "reason"=>""]);
     } catch (Exception $e) {
 		// $result["msg"] = "error $mail->ErrorInfo";
-		//var_dump("mail failed");
-		//var_dump($mail->ErrorInfo);
+		var_dump("mail failed");
+		var_dump($mail->ErrorInfo);
 		echo json_encode(["Accepted"=>false, "reason"=>"error $mail->ErrorInfo"]);
 	}
-	return;
-	//var_dump("out send_mail");
+	var_dump("out send_mail");
 }
 
 
@@ -105,7 +104,7 @@ if(isset($result))
 
   // encrypt pass
   $arr = str_split($newPass);
-  //var_dump($arr);
+  var_dump($arr);
   $encryptPass = "";
   foreach ($arr as $char) {
     $encryptPass .= chr(ord($char) + 1);
@@ -123,7 +122,8 @@ if(isset($result))
 
   // send email
   send_mail($result,"Forgot Password",$msg);
-	//Return from send_mail
+	$echo_array["Accepted"] = true;
+	$echo_array["reason"] = "";
 }
 echo json_encode($echo_array);
 ?>
