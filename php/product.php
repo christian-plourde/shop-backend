@@ -39,6 +39,73 @@ function get_products($id) {
     }
 }
 
+function get_product($id) {
+    if($id < 1 && !is_int($id)) {
+        throw new Exception("ID passed is invalid");
+    }
+
+    $dbh = get_db_connection();
+
+    if(mysqli_connect_errno()) {
+        throw new Exception("Failed to get database connection at line ".__LINE__);
+    }
+
+    $sql = "select * from Products where productID = ?";
+    # prepare the sql statement, die if sql statement is bad
+    if (! $sth = $dbh->prepare($sql)){
+        throw new Exception ("Failed to prepare at line ".__LINE__.' '.$dbh->error);
+    }
+    # bind the input parameters, die if not coded correctly
+    if (! $sth->bind_param('i', $id)) {
+        throw new Exception ("Failed to bind parameters at line ".__LINE__);//.' '.$dbh->error);
+    }
+    # send request to database, die if error
+    if (! $sth->execute()) {
+        throw new Exception ("Failed to execute at line ".__LINE__);//.' '.$dbh->error);
+    }
+
+    // get results, check a product was found before moving on
+    $result = $sth->get_result();
+    if($result-> num_rows === 0){
+        throw new Exception("No Products Found");
+    }
+
+    // get the returned product in an assoc array
+    $product = $result->fetch_all(MYSQLI_ASSOC);
+
+    $sth->close();
+
+    $sql = "select image_url from ProductImages where productID = ?";
+    # prepare the sql statement, die if sql statement is bad
+    if (! $sth = $dbh->prepare($sql)){
+        throw new Exception ("Failed to prepare at line ".__LINE__.' '.$dbh->error);
+    }
+    # bind the input parameters, die if not coded correctly
+    if (! $sth->bind_param('i', $id)) {
+        throw new Exception ("Failed to bind parameters at line ".__LINE__);//.' '.$dbh->error);
+    }
+    # bind the output parameters, die if not coded correctly
+    if (! $sth->bind_result($imageURL)) {
+        throw new Exception ("Failed to bind results at line ".__LINE__);//.' '.$dbh->error);
+    }
+    # send request to database, die if error
+    if (! $sth->execute()) {
+        throw new Exception ("Failed to execute at line ".__LINE__);//.' '.$dbh->error);
+    }
+
+    $imageURLs = array();
+    while($sth->fetch()) {
+        $imageURLs[] = $imageURL;
+    }
+
+    // add array of all images to the products assoc array i.e. now contains 'image_url' index
+    $product[0] += ['image_url' => $imageURLs];
+
+    $sth->close();
+
+    return $product;
+}
+
 function get_product_image($pid) {
     $db = get_db_connection();
     $result = $db->query("SELECT Products.productID as productid, image_url FROM ProductImages,Products WHERE Products.productID = ProductImages.productID")->fetch_all(MYSQLI_ASSOC);
