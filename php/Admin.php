@@ -24,4 +24,13 @@ function get_best_sellers_by_reviews(){
     return json_encode($array);
 }
 
+
+if(isset($_GET['topbyquantity'])){
+    echo get_best_sellers_by_quantity();
+}
+
+if(isset($_GET['topbyreviews'])){
+    echo get_best_sellers_by_reviews();
+}
+
 ?>
