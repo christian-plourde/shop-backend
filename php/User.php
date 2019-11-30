@@ -23,7 +23,7 @@ return json_encode($result);
 // }
 
 //Get a list of items currently being sold by the used
-function get_products_sold_by_user($username){
+/*function get_products_sold_by_user($username){
 	if(isset($username)){
 	$db = get_db_connection();
 	$query = "SELECT Products.* FROM Products,Accounts WHERE Accounts.accountID = Products.ownerID AND Accounts.accountID=(SELECT Accounts.accountID from Accounts where Accounts.username='$username');";
@@ -32,6 +32,30 @@ function get_products_sold_by_user($username){
 	}
 	else {
 		echo "invalid input!";
+	}
+}*/
+
+function get_products_sold_by_user($username) {
+	if(isset($username)) {
+		$db = get_db_connection();
+		//get account id of username
+		$userID = $db->query("SELECT accountID FROM Accounts WHERE username = '$username'")->fetch_assoc()['accountID'];
+		// get ids of products sold by username
+		$result = $db->query("SELECT productID FROM Products WHERE ownerID = $userID");
+
+		if($result->num_rows > 0) {
+			while($row = $result->fetch_assoc()['productID']) {
+				$ids[] = $row;
+			}
+			$products = array();
+			// for each id, get product info
+			foreach($ids as $id) {
+				$products[] = get_product($id);
+			}
+			return $products;
+		} else {
+			echo "No products found";
+		}
 	}
 }
 
