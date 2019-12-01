@@ -140,6 +140,16 @@ function remove_product($id) {
     $result = $db->query("DELETE FROM Products WHERE productID=$id");
 }
 
+function add_product_image($image){
+    $db = get_db_connection();
+    $result = $db->query("INSERT INTO ProductImages(image_url) VALUES($image)");
+}
+
+function remove_product_image($pid){
+    $db = get_db_connection();
+    $result = $db->query("DELETE FROM ReviewImages WHERE reviewID=$rid");
+}
+
 if (isset($_GET['product'])) {
     echo get_products($_GET['product']);
 } else if (isset($_POST['quantity'], $_POST['ownerID'], $_POST['productName'], $_POST['descriptionText'], $_POST['productPrice'], $_POST['dimensions'], $_POST['color'], $_POST['modelname'])) {
@@ -147,4 +157,13 @@ if (isset($_GET['product'])) {
 } else if (isset($_POST['remove'])) {
     remove_product($_POST['remove']);
 }
+
+if(isset($_POST['addproductimage'])){
+    add_product_image($_POST['addproductimage']);
+}
+
+if(isset($_POST['deleteproductimage'])){
+    remove_product_image($_POST['deleteproductimage']);
+}
+
 ?>

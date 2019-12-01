@@ -34,6 +34,18 @@ $db = get_db_connection();
 $result = $db->query("INSERT INTO Reviews(productID,reviewerID,rating,reviewerText) VALUES ($pid,$rid,'$rating','$reviewerText')");	
 }
 
+// this is separate from add_review() because we need to access ReviewImages
+function add_review_image($image){
+    $db = get_db_connection();
+    $result = $db->query("INSERT INTO ReviewImages(image_url) VALUES ($image)");
+}
+
+// deletes the column from ReviewImages
+function remove_review_image($rid){
+    $db = get_db_connection();
+    $result = $db->query("DELETE FROM ReviewImages WHERE reviewID=$rid");	
+}
+
 function remove_review($rid){
 $db = get_db_connection();
 $result = $db->query("DELETE FROM Reviews WHERE reviewID=$rid");	
@@ -57,6 +69,14 @@ remove_review($_POST['delete']);
 
 if(isset($_POST['pid']) && isset($_POST['rid']) && isset($_POST['rating']) && isset($_POST['reviewerText'])){
 add_review($_POST['pid'],$_POST['rid'],$_POST['rating'],$_POST['reviewerText']);
+}
+
+if(isset($_POST['addreviewimage'])){
+    add_review_image($_POST['addreviewimage']);
+}
+
+if(isset($_POST['deletereviewimage'])){
+    remove_review_image($_POST['deletereviewimage']);
 }
 ?>
 
