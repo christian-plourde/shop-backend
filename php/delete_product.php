@@ -122,8 +122,8 @@ function delete_product($product_id){
 }
 
 //uncomment this to fix deletion of products 1 or 6
-fix_deletion_of_debug_product1();
-return;
+// fix_deletion_of_debug_product1();
+// return;
 
 /*The following for debugging*/
 //SQL timestamp format is the following: '1970-01-01 00:00:01'
