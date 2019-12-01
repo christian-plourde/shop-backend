@@ -1,11 +1,12 @@
 <?php
 require_once 'Connect.php';
 require_once 'User.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-//require 'vendor/autoload.php';
+// require 'vendor/autoload.php';
 
 // USE BELOW REQUIRE WHEN UPLOADING TO GIT
 require '../vendor/autoload.php';
@@ -53,12 +54,12 @@ function send_mail($email, $subject, $message) {
 		$result["msg"] = "GOOD";
 		echo "good";
 		var_dump("mail sent");
-        echo json_encode($result);
+        // echo json_encode(["Accepted"=>true, "reason"=>""]);
     } catch (Exception $e) {
-		$result["msg"] = "error $mail->ErrorInfo";
+		// $result["msg"] = "error $mail->ErrorInfo";
 		var_dump("mail failed");
 		var_dump($mail->ErrorInfo);
-		echo json_encode($result);
+		echo json_encode(["Accepted"=>false, "reason"=>"error $mail->ErrorInfo"]);
 	}
 	var_dump("out send_mail");
 }
@@ -115,12 +116,14 @@ if(isset($result))
   $msg = "Hello, <br>
          You requested to change your password, below is your new password. <br>
          Password: $newPass";
-  
+
   // use wordwrap() if lines are longer than 70 characters
   $msg = wordwrap($msg,70);
 
   // send email
   send_mail($result,"Forgot Password",$msg);
+	$echo_array["Accepted"] = true;
+	$echo_array["reason"] = "";
 }
 echo json_encode($echo_array);
 ?>
