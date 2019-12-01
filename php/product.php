@@ -131,8 +131,6 @@ function get_tag($id) {
 }
 
 function add_product($quantity, $ownerID, $productName, $descriptionText, $productPrice, $dimensions, $color, $modelname) {
-    echo 'adding product';
-    return;
     $db = get_db_connection();
     $result = $db->query("INSERT INTO Products(quantity,ownerID,productName,descriptionText,productPrice,dimensions,color,modelname)VALUES($quantity,$ownerID,$productName,$descriptionText,$productPrice,$dimensions,$color,$modelname)");
 }
