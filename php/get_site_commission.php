@@ -12,6 +12,12 @@ function get_site_commission($timestamp){
   return json_encode($result);
 }
 
+function get_site_quantity($timestamp){
+  $db = get_db_connection();
+  $result = $db->query("SELECT sum(quantity) as quantity FROM Transaction where time_stamp > $timestamp")->fetch_all(MYSQLI_ASSOC);
+  return json_encode($result);
+}
+
 /*The following for debugging*/
 //SQL timestamp format is the following: '1970-01-01 00:00:01'
 // $data = json_decode('{"from_date":"\'2019-09-03 00:00:00\'"}', TRUE);
@@ -28,18 +34,32 @@ if (!isset($data))
 
 $from_date = $data['from_date'];
 
-// $result = get_products_sold_by_user($username);
-$result = get_site_commission($from_date);
+// $result = get_site_commission($from_date);
+$results_array = array();
+array_push($results_array, get_site_commission($from_date));
+array_push($results_array, get_site_quantity($from_date));
+
 
 $echo_array = array("Accepted" => false,
                     "reason"=>"unsuccessful query",
-                    "commission" => NULL);
-if(isset($result))
+                    "results" => []);
+// if(isset($result))
+// {
+//     $echo_array["Accepted"] = true;
+//     $echo_array["reason"] = "";
+//     $commission_obj = json_decode($result)[0];
+//     $commission_obj["quantity"] = 0;
+//     $echo_array["commission"] = $commission_obj;
+// }
+
+if(isset($results_array) and isset($results_array[0]) and isset($results_array[1]))
 {
     $echo_array["Accepted"] = true;
     $echo_array["reason"] = "";
-    $commission_obj = json_decode($result)[0];
-    $echo_array["commission"] = $commission_obj;
+    //Commission
+    array_push($echo_array["results"], json_decode($results_array[0])[0]);
+    //Quantity
+    array_push($echo_array["results"], json_decode($results_array[1])[0]);
 }
 echo json_encode($echo_array);
 ?>
