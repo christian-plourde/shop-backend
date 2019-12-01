@@ -90,9 +90,15 @@ return json_encode($result);
 }
 
 
-function get_site_commision(){
+// function get_site_commision(){
+// $db = get_db_connection();
+// $result = $db->query("SELECT 0.08*sum(price) AS commision FROM Transaction")->fetch_all(MYSQLI_ASSOC);
+// return json_encode($result);
+// }
+
+function get_site_commission($timestamp){
 $db = get_db_connection();
-$result = $db->query("SELECT 0.08*sum(price) AS commision FROM Transaction")->fetch_all(MYSQLI_ASSOC);
+$result = $db->query("SELECT 0.08*sum(price) AS commission FROM Transaction where time_stamp > $timestamp")->fetch_all(MYSQLI_ASSOC);
 return json_encode($result);
 }
 
