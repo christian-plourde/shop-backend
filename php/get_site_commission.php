@@ -43,15 +43,7 @@ array_push($results_array, get_site_quantity($from_date));
 $echo_array = array("Accepted" => false,
                     "reason"=>"unsuccessful query",
                     "results" => []);
-// if(isset($result))
-// {
-//     $echo_array["Accepted"] = true;
-//     $echo_array["reason"] = "";
-//     $commission_obj = json_decode($result)[0];
-//     $commission_obj["quantity"] = 0;
-//     $echo_array["commission"] = $commission_obj;
-// }
-
+                    
 if(isset($results_array) and isset($results_array[0]) and isset($results_array[1]))
 {
     $echo_array["Accepted"] = true;
