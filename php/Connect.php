@@ -1,5 +1,5 @@
 <?php
-function get_db_connection() {
+    function get_db_connection() {
     $servername = "remotemysql.com";
     $username = "HQgsxOVVFA";
     $password = "QU8LU8QaqR";
@@ -8,5 +8,4 @@ function get_db_connection() {
     $dbh = new mysqli($servername, $username, $password, $database, $dbport);
     return $dbh;
 }
-
 ?>

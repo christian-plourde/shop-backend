@@ -8,6 +8,11 @@ use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php';
 
+//Return 8% of all transactions since from_date
+function get_commission_since_date($from_date){
+
+}
+
 function insert_transcation($productid,$buyerid,$sellerid,$quantity,$price){
 var_dump("in insert_transaction");
 var_dump($productid);
@@ -20,7 +25,7 @@ $date = date("Y-m-d H:i:s");
 $currentquantity = $db->query("SELECT quantity FROM Products WHERE productid = $productid")->fetch_assoc()['quantity'];
 if($currentquantity>=$quantity){
 $result = $db->query("INSERT INTO Transaction(productID,buyerID,sellerID,time_stamp,quantity,price) VALUES ($productid,$buyerid,
-	$sellerid,'$date',$quantity,$price)"); 
+	$sellerid,'$date',$quantity,$price)");
 $db->query("UPDATE Products SET quantity = quantity - $quantity WHERE productID = $productid");
 send_buyer_email($productid, $buyerid, $sellerid, $date, $price);
 send_seller_email($productid, $sellerid, $date);
