@@ -19,7 +19,7 @@ function get_products($id) {
             }
             foreach ($productimgs as $images) {
                 if ($images['pid'] == $data['productID']) {
-                    array_push($productsarray, $images['image_url']);
+                    array_push($productsarray, './ressources/img/' . $images['image_url']);
                 }
             }
             $data['tags'] = $tagsarray;
@@ -33,6 +33,43 @@ function get_products($id) {
         $array["tags"] = get_tag($array['productID']);
         $array["images"] = get_product_image($array['productID']);
         return json_encode($array);}
+        else{
+        	echo "Item not found!";
+        }
+    }
+}
+
+function get_products_noencode($id) {
+    $db = get_db_connection();
+    if ($id == - 1) {
+        $productimgs = $db->query("SELECT Products.productID AS pid, image_url FROM ProductImages,Products WHERE Products.productID = ProductImages.productID")->fetch_all(MYSQLI_ASSOC);
+        $producttags = $db->query("SELECT productID, tag FROM Tags")->fetch_all(MYSQLI_ASSOC);
+        $result = $db->query("SELECT Products.* FROM Products");
+        $array = $result->fetch_all(MYSQLI_ASSOC);
+        foreach ($array as & $data) {
+            $tagsarray = array();
+            $productsarray = array();
+            foreach ($producttags as $tags) {
+                if ($tags['productID'] == $data['productID']) {
+                    array_push($tagsarray, $tags['tag']);
+                }
+            }
+            foreach ($productimgs as $images) {
+                if ($images['pid'] == $data['productID']) {
+                    array_push($productsarray, './ressources/img/' . $images['image_url']);
+                }
+            }
+            $data['tags'] = $tagsarray;
+            $data['picture'] = $productsarray[0];
+        }
+        return $array;
+    } elseif ($id > 0) {
+        $result = $db->query("SELECT Products.* FROM Products WHERE productID=$id");
+        if(mysqli_num_rows($result)==1){
+        $array = $result->fetch_assoc();
+        $array["tags"] = get_tag($array['productID']);
+        $array["images"] = get_product_image($array['productID']);
+        return $array;}
         else{
         	echo "Item not found!";
         }
