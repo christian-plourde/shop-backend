@@ -60,7 +60,7 @@ function get_products_noencode($id) {
                 }
             }
             $data['tags'] = $tagsarray;
-            $data['picture'] = $productsarray[0];
+            $data['picture'] = array_values($productsarray)[0];
         }
         return $array;
     } elseif ($id > 0) {
