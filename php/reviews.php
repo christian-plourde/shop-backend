@@ -1,6 +1,7 @@
 <?php
 require_once("Connect.php");
-
+require_once("User.php");
+$postdata = json_decode(file_get_contents('php://input'), TRUE);
 
 
 function get_review_average($id){
@@ -9,54 +10,85 @@ $result = $db->query("SELECT Products.productName,Products.productID, avg(rating
 return json_encode ($result->fetch_assoc());
 }
 
+
+
 function get_review($id){
 $db = get_db_connection();
-$result = $db->query("SELECT Reviews.* FROM Reviews where Reviews.productID=$id");
-$array = $result->fetch_all(MYSQLI_ASSOC);
-foreach($array as &$data){
-$data["images"] = json_decode(get_image($data['reviewID']),true);
+$result = $db->query("SELECT * FROM Reviews")->fetch_all(MYSQLI_ASSOC);
+$imgsarray = json_decode(get_image($id));
+$resultsarray = array();
+$imagestoaddarray = array();
+
+foreach($result as $data){
+if($data['productID']==$id){
+foreach ($imgsarray as $imgs) {
+if($imgs['reviewID']==$data['reviewID']){
+array_push($resultsarray,$imgs['image_url']);
 }
-return json_encode($array);
+
+
+}
+
+$item = $data;
+$item["images"] = $resultsarray;
+array_push($imagestoaddarray,$item);
+}
+
+}
+return json_encode($imagestoaddarray);
 }
 
 function get_image($rid){
 $db = get_db_connection();
-$result = $db->query("SELECT ReviewImages.image_url FROM Reviews,ReviewImages where ReviewImages.reviewID = Reviews.reviewID AND Reviews.reviewID=$rid");
+$result = $db->query("SELECT * FROM ReviewImages")->fetch_all(MYSQLI_ASSOC);
 $array = array();
-foreach($result as $key=>$value){
-array_push($array,$value['image_url']);
+foreach($result as $data){
+if($data['reviewID']==$rid){
+array_push($array,$data['image_url']);
+}
 }
 return json_encode($array);
 }
 
+
+
 function add_review($pid,$rid,$rating,$reviewerText){
 $db = get_db_connection();
-$result = $db->query("INSERT INTO Reviews(productID,reviewerID,rating,reviewerText) VALUES ($pid,$rid,'$rating','$reviewerText')");	
+$result = $db->query("INSERT INTO 
+	Reviews(productID,reviewerID,rating,reviewText) 
+	VALUES 
+	($pid,$rid,$rating,'$reviewerText')");	
 }
 
 function remove_review($rid){
 $db = get_db_connection();
-$result = $db->query("DELETE FROM Reviews WHERE reviewID=$rid");	
+$result = $db->query("DELETE FROM Reviews WHERE reviewID=$rid");
+$err = $db->error;
+$echo_array = array("Accepted" => false, "Reason" => ""); 
+if($err == NULL)
+{
+   $echo_array["Accepted"] = true;
+}
+else {
+  $echo_array["Reason"] = $err;
+}
+echo json_encode($echo_array);		
 }
 
 if(isset($_GET['averagereview'])){
 echo get_review_average($_GET['averagereview']);
 }
-
+else
 if(isset($_GET['review'])){
 echo get_review($_GET['review']);
 }
-
-if(isset($_GET['image'])){
-echo get_image($_GET['image']);
+else
+if(isset($postdata['delete'])){
+remove_review($postdata['delete']);
 }
-
-if(isset($_POST['delete'])){
-remove_review($_POST['delete']);
-}
-
-if(isset($_POST['pid']) && isset($_POST['rid']) && isset($_POST['rating']) && isset($_POST['reviewerText'])){
-add_review($_POST['pid'],$_POST['rid'],$_POST['rating'],$_POST['reviewerText']);
+else
+if(isset($postdata['rid'],$postdata['rating'],$postdata['pid'],$postdata['reviewerText'])){
+$result = json_decode(get_user_details($postdata['rid']),TRUE);
+add_review($postdata['pid'],$result['accountID'],$postdata['rating'],$postdata['reviewerText']);
 }
 ?>
-
