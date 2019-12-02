@@ -4,7 +4,7 @@ require_once("product.php");
 
 function get_user_details($uid){
 $db=get_db_connection();
-$result = $db->query("SELECT username,firstName,lastName,address,Country FROM Accounts WHERE Accounts.accountID = $uid")->fetch_all(MYSQLI_ASSOC);
+$result = $db->query("SELECT * FROM Accounts WHERE Accounts.accountID = $uid")->fetch_all(MYSQLI_ASSOC);
 return json_encode($result);
 }
 
