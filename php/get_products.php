@@ -13,6 +13,5 @@ if(isset($products))
     $echo_array["reason"] = "";
     $echo_array["products"]= $products;
 }
-// echo json_encode($echo_array, JSON_UNESCAPED_SLASHES);
 echo json_encode($echo_array, JSON_UNESCAPED_SLASHES);
 ?>
