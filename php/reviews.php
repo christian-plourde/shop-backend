@@ -1,8 +1,7 @@
 <?php
 require_once("Connect.php");
 require_once("User.php");
-$postdata = json_encode(file_get_contents('php://input'));
-
+$postdata = json_decode(file_get_contents('php://input'), TRUE);
 
 
 function get_review_average($id){
@@ -55,17 +54,10 @@ return json_encode($array);
 
 function add_review($pid,$rid,$rating,$reviewerText){
 $db = get_db_connection();
-$result = $db->query("INSERT INTO Reviews(productID,reviewerID,rating,reviewText) VALUES ($pid,$rid,$rating,'$reviewerText')");
-$err = $db->error;
-$echo_array = array("Accepted" => false, "Reason" => ""); 
-if($err == NULL)
-{
-   $echo_array["Accepted"] = true;
-}
-else {
-  $echo_array["Reason"] = $err;
-}
-echo json_encode($echo_array);	
+$result = $db->query("INSERT INTO 
+	Reviews(productID,reviewerID,rating,reviewText) 
+	VALUES 
+	($pid,$rid,$rating,'$reviewerText')");	
 }
 
 function remove_review($rid){
@@ -89,15 +81,14 @@ echo get_review_average($_GET['averagereview']);
 else
 if(isset($_GET['review'])){
 echo get_review($_GET['review']);
-echo get_user_details(3);
 }
 else
 if(isset($postdata['delete'])){
 remove_review($postdata['delete']);
 }
 else
-if(isset($postdata['rid'])){
-$result = get_user_details($postdata['rid']);
-add_review($postdata['pid'],$result['accountID'],$postdata['rating'],$postdata['text']);
+if(isset($postdata['rid'],$postdata['rating'],$postdata['pid'],$postdata['reviewerText'])){
+$result = json_decode(get_user_details($postdata['rid']),TRUE);
+add_review($postdata['pid'],$result['accountID'],$postdata['rating'],$postdata['reviewerText']);
 }
 ?>
