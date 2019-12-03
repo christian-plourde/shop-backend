@@ -1,6 +1,8 @@
 <?php
 require_once("Connect.php");
+require_once("User.php");
 date_default_timezone_set("America/New_York");
+$postdata = file_get_contents('php://input');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -10,16 +12,13 @@ require '../vendor/autoload.php';
 
 //Return 8% of all transactions since from_date
 function get_commission_since_date($from_date){
-
+	$query = "SELECT sum(price) as total_price from Transaction WHERE time_stamp > $from_date and time_stamp < (SELECT current_timestamp)";
+	$db = get_db_connection();
+	$price = $db->query($query)->fetch_assoc()['total_price'];
+	return $price * 0.08;
 }
 
 function insert_transcation($productid,$buyerid,$sellerid,$quantity,$price){
-var_dump("in insert_transaction");
-var_dump($productid);
-var_dump($buyerid);
-var_dump($sellerid);
-var_dump($quantity);
-var_dump($price);
 $db = get_db_connection();
 $date = date("Y-m-d H:i:s");
 $currentquantity = $db->query("SELECT quantity FROM Products WHERE productid = $productid")->fetch_assoc()['quantity'];
@@ -27,34 +26,20 @@ if($currentquantity>=$quantity){
 $result = $db->query("INSERT INTO Transaction(productID,buyerID,sellerID,time_stamp,quantity,price) VALUES ($productid,$buyerid,
 	$sellerid,'$date',$quantity,$price)");
 $db->query("UPDATE Products SET quantity = quantity - $quantity WHERE productID = $productid");
-send_buyer_email($productid, $buyerid, $sellerid, $date, $price);
-send_seller_email($productid, $sellerid, $date);
-
 }
 else
 {
-var_dump("quantity error");
 echo("Cannot sell more than available!");
 }
-var_dump("out insert_transaction");
 }
 
-function send_buyer_email($productid, $buyerid, $sellerid, $date, $price) {
-	var_dump("in send_buyer_email");
-	$db = get_db_connection();
+//function send_buyer_email($productid, $buyerid, $sellerid, $date, $price) {
+	/*$db = get_db_connection();
 	$buyerEmail = $db->query("SELECT email FROM Accounts WHERE accountID = $buyerid")->fetch_assoc()['email'];
 	$buyerUser = $db->query("SELECT firstName FROM Accounts WHERE accountID = $buyerid")->fetch_assoc()['firstName'];
 	$sellerName = $db->query("SELECT username FROM Accounts WHERE accountID = $sellerid ")->fetch_assoc()['username'];
 	$prodName = $db->query("SELECT productName FROM Products WHERE productID = $productid")->fetch_assoc()['productName'];
 	$priceAfterTax = $price * 1.15;
-
-	var_dump($buyerEmail);
-	var_dump($buyerUser);
-	var_dump($sellerName);
-	var_dump($prodName);
-	var_dump($price);
-	var_dump($priceAfterTax);
-
 
 	$subject = "Thank you for your purchase from $sellerName";
 	$message = "Hello $buyerUser,<br>
@@ -66,31 +51,23 @@ function send_buyer_email($productid, $buyerid, $sellerid, $date, $price) {
 				Total: \$".round($priceAfterTax, 2)."<br>
 				Date: $date<br>
 				<br>
-				Thank you for your purchase. Your item will be shipped soon!";
+				Thank you for your purchase. Your item will be shipped soon!";*/
 
+function send_buyer_email($buyerEmail, $subject, $message) {	
 	$secureCheck = sanitize_email($buyerEmail);
 	if($secureCheck == false) {
 		echo("Invalid Email");
-		var_dump("send_buyer_email invalid");
 	} else {
 		send_mail($buyerEmail, $subject, $message);
-		var_dump("send_buyer_email sent");
 		echo("email sent");
 	}
-	var_dump("out send_buyer_email");
 }
 
 function send_seller_email($productid, $sellerid, $date) {
-	var_dump("in send_seller_email");
 	$db = get_db_connection();
 	$sellerEmail = $db->query("SELECT email FROM Accounts WHERE accountID = $sellerid ")->fetch_assoc()['email'];
 	$sellerName = $db->query("SELECT username FROM Accounts WHERE accountID = $sellerid ")->fetch_assoc()['username'];
 	$prodName = $prodName = $db->query("SELECT productName FROM Products WHERE productID = $productid")->fetch_assoc()['productName'];
-
-	var_dump($sellerEmail);
-	var_dump($sellerName);
-	var_dump($prodName);
-
 
 	$subject = "Your product has been bought!";
 	$message = "Hello, $sellerName,<br>
@@ -100,18 +77,14 @@ function send_seller_email($productid, $sellerid, $date) {
 	$secureCheck = sanitize_email($sellerEmail);
 	if($secureCheck == false) {
 		echo ("Invalid Email");
-		var_dump("send_seller_email invalid");
 	} else {
 		send_mail($sellerEmail, $subject, $message);
-		var_dump("send_seller_email sent");
 		echo ("email sent");
 	}
-	var_dump("out send_seller_email");
 }
 
 
 function sanitize_email($email) {
-	var_dump("in sanitize_email");
 	$email = filter_var($email, FILTER_SANITIZE_EMAIL);
 	if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
 		return true;
@@ -122,7 +95,6 @@ function sanitize_email($email) {
 
 
 function send_mail($email, $subject, $message) {
-	var_dump("in send_mail");
 	$mail = new PHPMailer(true);
     try {
         $mail->SMTPOptions = array(
@@ -147,12 +119,10 @@ function send_mail($email, $subject, $message) {
         $mail->Port = 587;
 
 		//Receipent
-		var_dump("receipent");
         $mail->setFrom('noreply@shop354.com', 'SHOP 354');
         $mail->addAddress($email);
 
 		//Content
-		var_dump("content");
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body = $message;
@@ -162,19 +132,53 @@ function send_mail($email, $subject, $message) {
         $mail->send();
 		$result["msg"] = "GOOD";
 		echo "good";
-		var_dump("mail sent");
         echo json_encode($result);
     } catch (Exception $e) {
 		$result["msg"] = "error $mail->ErrorInfo";
-		var_dump("mail failed");
-		var_dump($mail->ErrorInfo);
 		echo json_encode($result);
 	}
 	var_dump("out send_mail");
 }
 
 
-if(isset($_POST['productid']) && isset($_POST['buyerid']) && isset($_POST['sellerid']) && isset($_POST['quantity']) && isset($_POST['price'])){
-	insert_transcation($_POST['productid'],$_POST['buyerid'],$_POST['sellerid'],$_POST['quantity'],$_POST['price']);
+if(isset($postdata)){
+$productarray = json_decode($postdata,TRUE)['products'];
+$date = date("Y-m-d H:i:s");
+$body = "Thank you for your purchase from Shop354 on $date. <br> Below is your purchase summary. <br><br>";
+$subtotal = 0;
+$db = get_db_connection();
+$buyerID = json_decode(get_user_details(json_decode($postdata,TRUE)['username']),TRUE)['accountID'];
+$buyerEmail = $db->query("SELECT email FROM Accounts WHERE username = '$buyerID'")->fetch_assoc()['email'];
+for($i = 0; $i<count($productarray); $i = $i + 1){
+$productid = json_decode(json_decode($postdata,TRUE)['products'][$i],TRUE)['productID'];
+$buyerid = json_decode(get_user_details(json_decode($postdata,TRUE)['username']),TRUE)['accountID'];
+$sellerid = json_decode(json_decode($postdata,TRUE)['products'][$i],TRUE)['ownerID'];
+$quantity = json_decode((json_decode($postdata,TRUE))['products'][$i],TRUE)['cartQuantity'];
+$price = json_decode((json_decode($postdata,TRUE))['products'][$i],TRUE)['productPrice'];
+insert_transcation($productid,$buyerid,$sellerid,$quantity,$price);
+
+$sellerName = $db->query("SELECT username FROM Accounts WHERE accountID = $sellerid ")->fetch_assoc()['username'];
+$prodName = $db->query("SELECT productName FROM Products WHERE productID = $productid")->fetch_assoc()['productName'];
+
+$body .= "Item Bought: $prodName<br>
+		  Seller: $sellerName<br>
+		  Price: \$".round($price, 2)."<br>";
+		  $subtotal += $price;
+
+send_seller_email($productid, $sellerid, $date);
+
+}
+
+$totalPrice = $subtotal * 1.15;
+$body .= "Total Price: \$".round($totalPrice, 2)."<br>";
+
+$subject = "Thank you for your purchase!";
+
+send_buyer_email($buyerEmail, $subject, $body);
+
+}
+
+if(isset($_POST['fromdate'])) {
+	echo get_commission_since_date($_POST['fromdate']);
 }
 ?>
