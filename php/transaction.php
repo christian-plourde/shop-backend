@@ -1,6 +1,8 @@
 <?php
 require_once("Connect.php");
+require_once("User.php");
 date_default_timezone_set("America/New_York");
+$postdata = file_get_contents('php://input');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -141,8 +143,16 @@ function send_mail($email, $subject, $message) {
 }
 
 
-if(isset($_POST['productid']) && isset($_POST['buyerid']) && isset($_POST['sellerid']) && isset($_POST['quantity']) && isset($_POST['price'])){
-	insert_transcation($_POST['productid'],$_POST['buyerid'],$_POST['sellerid'],$_POST['quantity'],$_POST['price']);
+if(isset($postdata)){
+$productarray = json_decode($postdata,TRUE)['products'];
+for($i = 0; $i<count($productarray); $i = $i + 1){
+$productid = json_decode(json_decode($postdata,TRUE)['products'][$i],TRUE)['productID'];
+$buyerid = json_decode(get_user_details(json_decode($postdata,TRUE)['username']),TRUE)['accountID'];
+$sellerid = json_decode(json_decode($postdata,TRUE)['products'][$i],TRUE)['ownerID'];
+$quantity = json_decode((json_decode($postdata,TRUE))['products'][$i],TRUE)['cartQuantity'];
+$price = json_decode((json_decode($postdata,TRUE))['products'][$i],TRUE)['productPrice'];
+insert_transcation($productid,$buyerid,$sellerid,$quantity,$price);
+}
 }
 
 if(isset($_POST['fromdate'])) {
