@@ -11,7 +11,7 @@ function get_products($id) {
     if ($id == - 1) {
         foreach ($array as & $data) {
             $tagsarray = array();
-            $productsarray = array(); 
+            $productsarray = array();
             foreach ($producttags as $tags) {
                 if ($tags['productID'] == $data['productID']) {
                     array_push($tagsarray, $tags['tag']);
@@ -32,7 +32,7 @@ function get_products($id) {
     	if($result['productID']==$id){
     	$product = $result;
         $tagsarray = array();
-        $productsarray = array(); 
+        $productsarray = array();
         foreach ($producttags as $tags) {
             if ($tags['productID'] == $result['productID']) {
                     array_push($tagsarray, $tags['tag']);
@@ -162,7 +162,7 @@ function get_product_image($pid) {
     $array = array();
     foreach ($result as $data) {
         if ($data['productID'] == $pid) {
-            array_push($array, $data['image_url']);
+            array_push($array, './ressources/img/' . $data['image_url']);
         }
     }
     return $array;
@@ -182,11 +182,11 @@ function get_tag($id) {
 
 function add_product($quantity, $ownerID, $productName, $descriptionText, $productPrice, $dimensions, $color, $modelname) {
     $db = get_db_connection();
-    $result = $db->query("INSERT INTO 
+    $result = $db->query("INSERT INTO
     	Products(quantity,ownerID,productName,descriptionText,productPrice,dimensions,color,modelname)
     	VALUES($quantity,$ownerID,'$productName','$descriptionText',$productPrice,'$dimensions','$color','$modelname')");
     $err = $db->error;
-$echo_array = array("Accepted" => false, "Reason" => ""); 
+$echo_array = array("Accepted" => false, "Reason" => "");
 if($err == NULL)
 {
    $echo_array["Accepted"] = true;
@@ -194,18 +194,18 @@ if($err == NULL)
 else {
   $echo_array["Reason"] = $err;
 }
-echo json_encode($echo_array);	
+echo json_encode($echo_array);
 }
 
 function remove_product($id) {
     $db = get_db_connection();
-    $db->query("DELETE 
-    	FROM 
-    	Products 
-    	WHERE 
+    $db->query("DELETE
+    	FROM
+    	Products
+    	WHERE
     	productID='$id'");
     $err = $db->error;
-$echo_array = array("Accepted" => false, "Reason" => ""); 
+$echo_array = array("Accepted" => false, "Reason" => "");
 if($err == NULL)
 {
    $echo_array["Accepted"] = true;
@@ -213,7 +213,7 @@ if($err == NULL)
 else {
   $echo_array["Reason"] = $err;
 }
-echo json_encode($echo_array);	
+echo json_encode($echo_array);
 }
 
 if (isset($_GET['product'])) {
@@ -228,10 +228,10 @@ if (isset($_GET['product'])) {
 	add_product($_POST['quantity'],
      $_POST['ownerID'],
       $productname,
-       $descriptionText, 
-    	$productprice, 
-    	$dimensions, 
-    	$color, 
+       $descriptionText,
+    	$productprice,
+    	$dimensions,
+    	$color,
     	$modelname);
 } else if (isset($_POST['remove'])) {
 	$remove = $_POST['remove'];
