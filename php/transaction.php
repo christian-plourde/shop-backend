@@ -116,20 +116,20 @@ function send_mail($email, $subject, $message) {
         $mail->Username = "shop.03544@gmail.com";
         $mail->Password = "COMP3544";
         $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
-
+		$mail->Port = 587;
+		
 		//Receipent
         $mail->setFrom('noreply@shop354.com', 'SHOP 354');
         $mail->addAddress($email);
-
+		
 		//Content
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body = $message;
-
+		
 		var_dump($mail);
-
-        $mail->send();
+		
+		$mail->send();
 		$result["msg"] = "GOOD";
 		echo "good";
         echo json_encode($result);
@@ -157,19 +157,22 @@ $quantity = json_decode((json_decode($postdata,TRUE))['products'][$i],TRUE)['car
 $price = json_decode((json_decode($postdata,TRUE))['products'][$i],TRUE)['productPrice'];
 insert_transcation($productid,$buyerid,$sellerid,$quantity,$price);
 
-$sellerName = $db->query("SELECT username FROM Accounts WHERE accountID = $sellerid ")->fetch_assoc()['username'];
-$prodName = $db->query("SELECT productName FROM Products WHERE productID = $productid")->fetch_assoc()['productName'];
+$currentquantity = $db->query("SELECT quantity FROM Products WHERE productid = $productid")->fetch_assoc()['quantity'];
+// make sure transaction was successfully made, if so send email
+if($currentquantity >= $quantity) {
+	$sellerName = $db->query("SELECT username FROM Accounts WHERE accountID = $sellerid ")->fetch_assoc()['username'];
+	$prodName = $db->query("SELECT productName FROM Products WHERE productID = $productid")->fetch_assoc()['productName'];
 
-$price = $price * $quantity;
+	$price = $price * $quantity;
 
-$body .= "Item Bought: $prodName<br>
+	$body .= "Item Bought: $prodName<br>
 		  Quantity: $quantity<br>
 		  Seller: $sellerName<br>
 		  Price: \$".round($price, 2)."<br>";
 		  $subtotal += $price;
 
-send_seller_email($productid, $sellerid, $date);
-
+	send_seller_email($productid, $sellerid, $date);
+}
 }
 
 $totalPrice = $subtotal * 1.15;
