@@ -160,7 +160,10 @@ insert_transcation($productid,$buyerid,$sellerid,$quantity,$price);
 $sellerName = $db->query("SELECT username FROM Accounts WHERE accountID = $sellerid ")->fetch_assoc()['username'];
 $prodName = $db->query("SELECT productName FROM Products WHERE productID = $productid")->fetch_assoc()['productName'];
 
+$price = $price * $quantity;
+
 $body .= "Item Bought: $prodName<br>
+		  Quantity: $quantity<br>
 		  Seller: $sellerName<br>
 		  Price: \$".round($price, 2)."<br>";
 		  $subtotal += $price;
