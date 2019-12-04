@@ -1,6 +1,5 @@
 <?php
 require_once("Connect.php");
-include("product.php");
 
 
 
@@ -48,39 +47,20 @@ function add_tags_noencode($productName, $descriptionText, $dimensions, $color){
   $query = "INSERT INTO Tags (productID, tag) VALUES ";
   $query .= implode(", ", "($id, $tags)");
 
-  return $query;
-}
-
-function add_product__noencode($product){\
-  $ownerID = get_account($product['userName'])['accountID'];
-  $query = "INSERT INTO Products (quantity, ownerID, productName, descriptionText, productPrice, dimensions, color, modelName) VALUES ";
-  $query .= '(';
-  $query .= (intval($product['quantity']) . ', ');
-  $query .= (intval($ownerID) . ', ');
-  $productName = $product['productName'];
-  $query .= ("'$productName', ");
-  $descriptionText = $product['descriptionText'];
-  $query .= ("'$descriptionText', ");
-  $query .= (intval($product['productPrice']) . ', ');
-  $dimensions = $product['dimensions'];
-  $query .= ("'$dimensions', ");
-  $color = $product['color'];
-  $query .= ("'$color', ");
-  $modelName = 'NULL';
-  $query .= ("'$modelName');");
+  console.log($query);
 
   return $query;
 }
 
 $data = json_decode(file_get_contents("php://input"), TRUE);
-// $data = json_decode('{"product":{
-//   "quantity":"100",
-//   "userName":"dat_magoo",
-//   "productName":"lala",
-//   "descriptionText":"lala",
-//   "productPrice":"14.99",
-//   "dimensions":"4x4",
-//   "color":"white"}}', TRUE);//Hard coded values
+$data = json_decode('{"product":{
+  "quantity":"100",
+  "userName":"dat_magoo",
+  "productName":"lala",
+  "descriptionText":"lala",
+  "productPrice":"14.99",
+  "dimensions":"4x4",
+  "color":"white"}}', TRUE);//Hard coded values
 
 if (!isset($data))
 {
