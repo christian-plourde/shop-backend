@@ -35,7 +35,7 @@ function add_product($product){
   return $result;
 }
 
-function add_tags_noencode($productName, $descriptionText, $dimensions, $color){
+function add_tags($productName, $descriptionText, $dimensions, $color){
   $productID = "SELECT productID FROM Products WHERE 
                   productName = $productName AND 
                   descriptionText = $descriptionText AND 
@@ -52,7 +52,7 @@ function add_tags_noencode($productName, $descriptionText, $dimensions, $color){
   return $query;
 }
 
-$data = json_decode(file_get_contents("php://input"), TRUE);
+// $data = json_decode(file_get_contents("php://input"), TRUE);
 $data = json_decode('{"product":{
   "quantity":"100",
   "userName":"dat_magoo",
