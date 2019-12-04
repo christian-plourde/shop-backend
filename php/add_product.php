@@ -62,7 +62,7 @@ function add_tags($productName, $descriptionText, $dimensions, $color){
   return $query;
 }
 
-// $data = json_decode(file_get_contents("php://input"), TRUE);
+$data = json_decode(file_get_contents("php://input"), TRUE);
 // $data = json_decode('{"product":{
 //   "quantity":"100",
 //   "userName":"dat_magoo",
@@ -82,7 +82,7 @@ if (!isset($data))
 // return;
 
 // $product = $data['product'];
-// $result = add_product($product);
+$result = add_product($data);
 
 $echo_array = array("Accepted" => false,
                     "reason"=>"unsuccessful query");
