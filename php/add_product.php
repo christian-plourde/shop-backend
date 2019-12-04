@@ -31,36 +31,46 @@ function add_product($product){
   $db = get_db_connection();
   $result = $db->query($query);
 
-  $query = add_tags($productName, $descriptionText, $productID, $dimensions, $color);
-  return $result;
+  $query = add_tags($productName, $descriptionText, $dimensions, $color);
+  return $db->query($query);
 }
 
 function add_tags($productName, $descriptionText, $dimensions, $color){
-  $productID = "SELECT productID FROM Products WHERE 
-                  productName = $productName AND 
-                  descriptionText = $descriptionText AND 
-                  dimensions = $dimensions AND 
-                  color = $color";
+  $db = get_db_connection();
+
+  $query = "SELECT productID FROM Products WHERE 
+                  productName = '$productName' AND 
+                  descriptionText = '$descriptionText' AND 
+                  dimensions = '$dimensions' AND 
+                  color = '$color'";
+
+  $productID = $db->query($query)->fetch_assoc()['productID'];
 
   $tags = explode(" ", $productName);
-
   $query = "INSERT INTO Tags (productID, tag) VALUES ";
-  $query .= implode(", ", "($id, $tags)");
+  
+  $values = '';
+  foreach($tags as $tag) {
+    $values .= "($productID, '$tag'),";
 
-  console.log($query);
+  }
+  $values = substr($values,0,-2);
+  $values .= ")";
+
+  $query .= $values;
 
   return $query;
 }
 
 // $data = json_decode(file_get_contents("php://input"), TRUE);
-$data = json_decode('{"product":{
-  "quantity":"100",
-  "userName":"dat_magoo",
-  "productName":"lala",
-  "descriptionText":"lala",
-  "productPrice":"14.99",
-  "dimensions":"4x4",
-  "color":"white"}}', TRUE);//Hard coded values
+// $data = json_decode('{"product":{
+//   "quantity":"100",
+//   "userName":"dat_magoo",
+//   "productName":"lala lolo lele",
+//   "descriptionText":"lala",
+//   "productPrice":"14.99",
+//   "dimensions":"4x4",
+//   "color":"white"}}', TRUE);//Hard coded values
 
 if (!isset($data))
 {
@@ -71,8 +81,8 @@ if (!isset($data))
 // echo $product['quantity'];
 // return;
 
-$product = $data;
-$result = add_product($product);
+// $product = $data['product'];
+// $result = add_product($product);
 
 $echo_array = array("Accepted" => false,
                     "reason"=>"unsuccessful query");
