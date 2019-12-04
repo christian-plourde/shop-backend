@@ -1,5 +1,6 @@
 <?php
 require_once("Connect.php");
+include("product.php");
 
 
 
@@ -11,7 +12,6 @@ function get_account($user){
 }
 
 function add_product($product){
-
   $ownerID = get_account($product['userName'])['accountID'];
   $query = "INSERT INTO Products (quantity, ownerID, productName, descriptionText, productPrice, dimensions, color, modelName) VALUES ";
   $query .= '(';
@@ -30,7 +30,46 @@ function add_product($product){
   $query .= ("'$modelName');");
 
   $db = get_db_connection();
-  return $db->query($query);
+  $result = $db->query($query);
+
+  $query = add_tags($productName, $descriptionText, $productID, $dimensions, $color);
+  return $result;
+}
+
+function add_tags_noencode($productName, $descriptionText, $dimensions, $color){
+  $productID = "SELECT productID FROM Products WHERE 
+                  productName = $productName AND 
+                  descriptionText = $descriptionText AND 
+                  dimensions = $dimensions AND 
+                  color = $color";
+
+  $tags = explode(" ", $productName);
+
+  $query = "INSERT INTO Tags (productID, tag) VALUES ";
+  $query .= implode(", ", "($id, $tags)");
+
+  return $query;
+}
+
+function add_product__noencode($product){\
+  $ownerID = get_account($product['userName'])['accountID'];
+  $query = "INSERT INTO Products (quantity, ownerID, productName, descriptionText, productPrice, dimensions, color, modelName) VALUES ";
+  $query .= '(';
+  $query .= (intval($product['quantity']) . ', ');
+  $query .= (intval($ownerID) . ', ');
+  $productName = $product['productName'];
+  $query .= ("'$productName', ");
+  $descriptionText = $product['descriptionText'];
+  $query .= ("'$descriptionText', ");
+  $query .= (intval($product['productPrice']) . ', ');
+  $dimensions = $product['dimensions'];
+  $query .= ("'$dimensions', ");
+  $color = $product['color'];
+  $query .= ("'$color', ");
+  $modelName = 'NULL';
+  $query .= ("'$modelName');");
+
+  return $query;
 }
 
 $data = json_decode(file_get_contents("php://input"), TRUE);
