@@ -147,8 +147,8 @@ $date = date("Y-m-d H:i:s");
 $body = "Thank you for your purchase from Shop354 on $date. <br> Below is your purchase summary. <br><br>";
 $subtotal = 0;
 $db = get_db_connection();
-$buyerID = json_decode(get_user_details(json_decode($postdata,TRUE)['username']),TRUE)['accountID'];
-$buyerEmail = $db->query("SELECT email FROM Accounts WHERE username = '$buyerID'")->fetch_assoc()['email'];
+$buyerUser = json_decode(get_user_details(json_decode($postdata,TRUE)['username']),TRUE)['username'];
+$buyerEmail = $db->query("SELECT email FROM Accounts WHERE username = '$buyerUser'")->fetch_assoc()['email'];
 for($i = 0; $i<count($productarray); $i = $i + 1){
 $productid = json_decode(json_decode($postdata,TRUE)['products'][$i],TRUE)['productID'];
 $buyerid = json_decode(get_user_details(json_decode($postdata,TRUE)['username']),TRUE)['accountID'];
